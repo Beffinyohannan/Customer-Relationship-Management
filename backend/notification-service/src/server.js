@@ -69,5 +69,24 @@ app.post('/:id/read', authMiddleware, async (req, res) => {
   }
 });
 
+// Bulk mark-all-read for current user
+app.post('/read-all', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user?.sub;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+    const now = new Date();
+    const result = await Notification.updateMany(
+      { 'recipients.userId': userId, 'recipients.readAt': { $exists: false } },
+      { $set: { 'recipients.$[elem].readAt': now } },
+      { arrayFilters: [{ 'elem.userId': new mongoose.Types.ObjectId(userId), 'elem.readAt': { $exists: false } }] }
+    );
+    res.json({ ok: true, modified: result.modifiedCount || 0 });
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+});
+
+app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+
 const port = process.env.PORT || 5003;
 connectMongo().then(() => app.listen(port, () => console.log(`Notification on :${port}`)));

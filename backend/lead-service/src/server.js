@@ -111,5 +111,8 @@ app.post('/:id/assign', authMiddleware, requireRole(roles.admin, roles.manager),
   res.json(lead);
 });
 
+app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+
+
 const port = process.env.PORT || 5002;
 connectMongo().then(() => app.listen(port, () => console.log(`Lead on :${port}`)));

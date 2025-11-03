@@ -39,7 +39,7 @@ export default function Notifications() {
     const unread = items.filter(n => !n.read);
     if (unread.length === 0) return;
     try {
-      await Promise.allSettled(unread.map(n => api.post(`/notifications/${n._id}/read`))); 
+      await api.post('/notifications/read-all');
       setItems(prev => prev.map(n => ({ ...n, read: true })));
     } catch (e) {
       setError(e?.response?.data?.message || e?.message || 'Failed to mark all as read');

@@ -12,14 +12,22 @@ const app = express();
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN
 app.use(cors({ origin: FRONTEND_ORIGIN, credentials: true }));
 app.use(helmet());
-const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000', 10),
-  max: parseInt(process.env.RATE_LIMIT_MAX || '1200', 10),
+const windowMs = parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000', 10);
+const readsMax = parseInt(process.env.RATE_LIMIT_READS_MAX || '5000', 10);
+const writeMax = parseInt(process.env.RATE_LIMIT_WRITES_MAX || '600', 10);
+const authMax = parseInt(process.env.RATE_LIMIT_AUTH_MAX || '800', 10);
+
+const makeLimiter = (max) => rateLimit({
+  windowMs,
+  max,
   standardHeaders: true,
   legacyHeaders: false,
   skip: (req) => req.method === 'OPTIONS',
 });
-app.use(limiter);
+
+const authLimiter = makeLimiter(authMax);
+const readLimiter = makeLimiter(readsMax);
+const writeLimiter = makeLimiter(writeMax);
 app.options('*', cors({ origin: FRONTEND_ORIGIN, credentials: true }));
 
 const PUBLIC_ROUTES = (process.env.PUBLIC_ROUTES || '').split(',').filter(Boolean);
@@ -120,9 +128,14 @@ function jsonProxy(target, rewrite) {
   });
 }
 
-app.use('/auth', authGate, jsonProxy(process.env.AUTH_SERVICE_URL, { '^/auth': '' }));
-app.use('/leads', authGate, jsonProxy(process.env.LEAD_SERVICE_URL, { '^/leads': '' }));
-app.use('/notifications', authGate, jsonProxy(process.env.NOTIF_SERVICE_URL));
+// Auth: allow higher throughput
+app.use('/auth', authLimiter, authGate, jsonProxy(process.env.AUTH_SERVICE_URL, { '^/auth': '' }));
+
+// Leads: separate read vs write
+app.use('/leads', (req, res, next) => (req.method === 'GET' ? readLimiter(req, res, next) : writeLimiter(req, res, next)), authGate, jsonProxy(process.env.LEAD_SERVICE_URL, { '^/leads': '' }));
+
+// Notifications: reads are heavy, writes moderate
+app.use('/notifications', (req, res, next) => (req.method === 'GET' ? readLimiter(req, res, next) : writeLimiter(req, res, next)), authGate, jsonProxy(process.env.NOTIF_SERVICE_URL));
 
 app.use(express.json());
 
