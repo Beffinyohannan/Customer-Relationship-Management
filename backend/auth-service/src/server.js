@@ -42,7 +42,7 @@ app.post('/register', async (req, res) => {
     // console.log('user',user);
     res.status(201).json({ id: user._id, email: user.email, role: user.role, name: user.name });
   } catch (err) {
-    console.log('err',err);
+    console.log('err', err);
     if (err && err.code === 11000) {
       return res.status(409).json({ message: 'User with this email already exists' });
     }
@@ -74,25 +74,28 @@ app.post('/login', async (req, res) => {
   const refreshToken = signRefreshToken({ sub: String(user._id), role: user.role, email: user.email, name: user.name });
   const csrfToken = crypto.randomBytes(16).toString('hex');
   // console.log("ref",refreshToken);
-  
+
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    // sameSite: 'lax',
+    sameSite: 'none',
     path: '/auth',
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
   res.cookie('accessToken', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    // sameSite: 'lax', 
+    sameSite: 'none',
     path: '/',
     maxAge: 15 * 60 * 1000,
   });
   res.cookie('csrfToken', csrfToken, {
     httpOnly: false,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    // sameSite: 'lax',
+    sameSite: 'none',
     path: '/',
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
@@ -129,14 +132,16 @@ app.post('/refresh', async (req, res) => {
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      // sameSite: 'lax',
+      sameSite: 'none',
       path: '/',
       maxAge: 15 * 60 * 1000,
     });
     res.cookie('csrfToken', csrfToken, {
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      // sameSite: 'lax',
+      sameSite: 'none',
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
