@@ -12,7 +12,16 @@ import { useMe } from './hooks/useMe';
 import { ToastProvider } from './components/Toast.jsx';
 import { ConfigProvider, theme } from 'antd';
 
-const qc = new QueryClient();
+const qc = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+      retry: 1,
+      staleTime: 30_000,
+    },
+  },
+});
 
 function PrivateRoute({ children }) {
   const { isLoading, isError } = useMe({ retry: false });

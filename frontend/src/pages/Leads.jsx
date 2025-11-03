@@ -28,6 +28,8 @@ export default function Leads() {
   const leadsQuery = useQuery({
     queryKey: ['leads', page, limit],
     queryFn: async () => (await api.get(`/leads?page=${page}&limit=${limit}`)).data,
+    staleTime: 30_000,
+    keepPreviousData: true,
   });
   const leads = leadsQuery.data?.items || [];
   const total = leadsQuery.data?.total || 0;

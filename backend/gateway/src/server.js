@@ -12,7 +12,14 @@ const app = express();
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN
 app.use(cors({ origin: FRONTEND_ORIGIN, credentials: true }));
 app.use(helmet());
-app.use(rateLimit({ windowMs: 60_000, max: 300 }));
+const limiter = rateLimit({
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000', 10),
+  max: parseInt(process.env.RATE_LIMIT_MAX || '1200', 10),
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => req.method === 'OPTIONS',
+});
+app.use(limiter);
 app.options('*', cors({ origin: FRONTEND_ORIGIN, credentials: true }));
 
 const PUBLIC_ROUTES = (process.env.PUBLIC_ROUTES || '').split(',').filter(Boolean);
