@@ -152,11 +152,26 @@ app.post('/refresh', async (req, res) => {
 });
 
 // Logout (stateless) - client should clear tokens
+// app.post('/logout', (_req, res) => {
+//   res.clearCookie('refreshToken', { path: '/auth' });
+//   res.clearCookie('accessToken', { path: '/' });
+//   res.clearCookie('csrfToken', { path: '/' });
+//   res.json({ ok: true });
+// });
+
 app.post('/logout', (_req, res) => {
-  res.clearCookie('refreshToken', { path: '/auth' });
-  res.clearCookie('accessToken', { path: '/' });
-  res.clearCookie('csrfToken', { path: '/' });
-  res.json({ ok: true });
+  const cookieOptions = {
+    httpOnly: true,
+    secure: true,      // must match login cookie
+    sameSite: 'none',  // must match login cookie
+  };
+
+  // Clear cookies — use identical options and paths
+  res.clearCookie('refreshToken', { ...cookieOptions, path: '/auth' });
+  res.clearCookie('accessToken', { ...cookieOptions, path: '/' });
+  res.clearCookie('csrfToken', { ...cookieOptions, path: '/' });
+
+  res.status(200).json({ ok: true });
 });
 
 const port = process.env.PORT || 5001;
