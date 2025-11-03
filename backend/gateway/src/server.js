@@ -30,7 +30,14 @@ const readLimiter = makeLimiter(readsMax);
 const writeLimiter = makeLimiter(writeMax);
 app.options('*', cors({ origin: FRONTEND_ORIGIN, credentials: true }));
 
-const PUBLIC_ROUTES = (process.env.PUBLIC_ROUTES || '').split(',').filter(Boolean);
+const PUBLIC_DEFAULTS = ['/health', '/auth/login', '/auth/register', '/auth/refresh'];
+const PUBLIC_ROUTES = Array.from(new Set([
+  ...PUBLIC_DEFAULTS,
+  ...(process.env.PUBLIC_ROUTES || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean),
+]));
 
 function parseCookies(req) {
   const cookie = req.headers.cookie || '';
@@ -68,7 +75,7 @@ function authGate(req, res, next) {
     jwt.verify(accessToken, process.env.JWT_SECRET);
     // CSRF for mutating methods
     if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
-      const csrfHeader = req.headers['x-csrf-token'];
+      const csrfHeader = req.headers['x-csrf-token'] || req.headers['x-xsrf-token'];
       const csrfCookie = cookies.csrfToken;
       if (!csrfHeader || !csrfCookie || csrfHeader !== csrfCookie) {
         return res.status(403).json({ message: 'CSRF validation failed' });
