@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { Queue } from 'bullmq';
 import IORedis from 'ioredis';
-import { connectMongo, authMiddleware, mongoose } from 'shared/src/index.js';
+import { connectMongo, authMiddleware, mongoose } from './shared/index.js';
 import Notification from './models/Notification.js';
 
 dotenv.config();

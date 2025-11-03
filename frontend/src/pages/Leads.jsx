@@ -90,7 +90,7 @@ export default function Leads() {
     mutationFn: async ({ id, assignedTo }) => (await api.post(`/leads/${id}/assign`, { assignedTo })).data,
     onMutate: ({ id }) => setAssigningId(id),
     onSuccess: (_data, variables) => {
-      setAssignMap(prev => ({ ...prev, [variables.id]: '' }));
+      setAssignMap(prev => ({ ...prev, [variables.id]: variables.assignedTo }));
       toast.success({ title: 'Assigned', message: 'Lead assigned successfully' });
       qc.invalidateQueries({ queryKey: ['leads'] });
     },

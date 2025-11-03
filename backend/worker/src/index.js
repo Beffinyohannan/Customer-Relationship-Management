@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import { Worker } from 'bullmq';
 import IORedis from 'ioredis';
 import nodemailer from 'nodemailer';
-import { connectMongo, mongoose, roles } from 'shared/src/index.js';
+import { connectMongo, mongoose, roles } from './shared/index.js';
 
 dotenv.config();
 

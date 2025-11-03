@@ -72,14 +72,11 @@ export { mongoose };
 
 export function authMiddleware(req, res, next) {
   const header = req.headers.authorization || '';
-  // console.log("header", header);
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
-  // console.log("token", token);
   if (!token) return res.status(401).json({ message: 'Unauthorized' });
   try {
     const decoded = verifyToken(token);
     req.user = decoded;
-    // console.log("req", req.user);
     
     next();
   } catch (e) {

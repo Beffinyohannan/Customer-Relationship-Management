@@ -1,4 +1,4 @@
-import { mongoose } from 'shared/src/index.js';
+import { mongoose } from '../shared/index.js';
 
 const leadSchema = new mongoose.Schema(
   {

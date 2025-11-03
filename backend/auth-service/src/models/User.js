@@ -1,4 +1,4 @@
-import { mongoose, roles } from 'shared/src/index.js';
+import { mongoose, roles } from '../shared/index.js';
 
 const userSchema = new mongoose.Schema(
   {

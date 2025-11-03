@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import Redis from 'ioredis';
-import { connectMongo, authMiddleware, requireRole, roles, mongoose } from 'shared/src/index.js';
+import { connectMongo, authMiddleware, requireRole, roles, mongoose } from './shared/index.js';
 import Lead from './models/Lead.js';
 
 dotenv.config();

@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { connectMongo, hashPassword, comparePassword, signAccessToken, roles, authMiddleware, requireRole, mongoose } from 'shared/src/index.js';
+import { connectMongo, hashPassword, comparePassword, signAccessToken, roles, authMiddleware, requireRole, mongoose } from './shared/index.js';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import User from './models/User.js';
