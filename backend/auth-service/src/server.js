@@ -9,7 +9,8 @@ import User from './models/User.js';
 dotenv.config();
 
 const app = express();
-app.use(cors({ origin: true, credentials: true }));
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN;
+app.use(cors({ origin: FRONTEND_ORIGIN, credentials: true }));
 app.use(express.json());
 
 function signRefreshToken(payload) {

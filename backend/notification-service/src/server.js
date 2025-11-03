@@ -9,7 +9,8 @@ import Notification from './models/Notification.js';
 dotenv.config();
 
 const app = express();
-app.use(cors());
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN;
+app.use(cors({ origin: FRONTEND_ORIGIN, credentials: true }));
 app.use(express.json());
 
 const connection = new IORedis(process.env.REDIS_URL , {
