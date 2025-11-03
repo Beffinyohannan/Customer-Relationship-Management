@@ -80,7 +80,7 @@ app.post('/login', async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     // sameSite: 'lax',
-    sameSite: 'none',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     path: '/auth',
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
@@ -88,7 +88,7 @@ app.post('/login', async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     // sameSite: 'lax', 
-    sameSite: 'none',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     path: '/',
     maxAge: 15 * 60 * 1000,
   });
@@ -96,7 +96,7 @@ app.post('/login', async (req, res) => {
     httpOnly: false,
     secure: process.env.NODE_ENV === 'production',
     // sameSite: 'lax',
-    sameSite: 'none',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     path: '/',
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
@@ -134,7 +134,7 @@ app.post('/refresh', async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       // sameSite: 'lax',
-      sameSite: 'none',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       path: '/',
       maxAge: 15 * 60 * 1000,
     });
@@ -142,7 +142,7 @@ app.post('/refresh', async (req, res) => {
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       // sameSite: 'lax',
-      sameSite: 'none',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -164,7 +164,7 @@ app.post('/logout', (_req, res) => {
   const cookieOptions = {
     httpOnly: true,
     secure: true,      // must match login cookie
-    sameSite: 'none',  // must match login cookie
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',  // must match login cookie
   };
 
   // Clear cookies — use identical options and paths

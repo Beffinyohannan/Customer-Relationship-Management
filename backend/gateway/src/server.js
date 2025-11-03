@@ -74,7 +74,8 @@ function authGate(req, res, next) {
   try {
     jwt.verify(accessToken, process.env.JWT_SECRET);
     // CSRF for mutating methods
-    if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+    // if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+    if (!['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'].includes(req.method)) {
       const csrfHeader = req.headers['x-csrf-token'] || req.headers['x-xsrf-token'];
       const csrfCookie = cookies.csrfToken;
       if (!csrfHeader || !csrfCookie || csrfHeader !== csrfCookie) {
