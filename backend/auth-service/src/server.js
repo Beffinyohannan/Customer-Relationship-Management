@@ -174,5 +174,8 @@ app.post('/logout', (_req, res) => {
   res.status(200).json({ ok: true });
 });
 
+app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+
+
 const port = process.env.PORT || 5001;
 connectMongo().then(() => app.listen(port, () => console.log(`Auth on :${port}`)));
